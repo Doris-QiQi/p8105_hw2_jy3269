@@ -31,6 +31,20 @@ transit
 
 ```
 
+*  Description of the data:
+  * the transit data set has : `r ncol(transit)` columns(variables) and `r nrow(transit)` rows
+  * the dimenison is : `r dimension(transit)`
+  * the variables are : `r names(transit)`
+
+
+*  data cleaning steps:
+  * unify variable name format using `janitor::clean_names`
+  * select the required columns using `select()` in `dplyr`
+  * convert the character values in `entry` column into logical values (TRUE or FALSE) using `mutate()` and `recode()`
+  
+  
+
+
 ```{r}
 
 ```
