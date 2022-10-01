@@ -5,7 +5,64 @@ date: "`r Sys.Date()`"
 output: github_document
 ---
 
-```{r}
+```{r,warning=FALSE,message=FALSE}
 library(tidyverse)
 ```
 
+
+## Problem 1
+
+### 1. import csv data
+```{r, warning=TRUE,message=FALSE}
+transit <- read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
+  janitor::clean_names() 
+
+transit
+
+```
+
+### 2. clean data
+```{r}
+transit <- transit %>%  
+  select(line, station_name, station_latitude,station_longitude, route1:route11, entry, vending, entrance_type, ada) %>% 
+  mutate(entry=recode(entry,"YES"= TRUE,"NO"= FALSE))
+
+transit
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
