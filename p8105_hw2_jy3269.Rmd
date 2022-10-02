@@ -173,6 +173,81 @@ mr %>%
 
 
 
+## Problem 3
+
+1. read in 3 csv datasets
+```{r}
+pols <- read.csv("./data/pols-month.csv")
+pols
+
+unemploy <- read.csv("./data/unemployment.csv")
+unemploy
+
+snp <- read.csv("./data/snp.csv")
+snp
+
+
+```
+
+2. clean the pol-month dataset
+```{r}
+pols <- pols %>% 
+  separate(mon,into=c("year","month","day")) %>% 
+  mutate(month = recode(month, "01" = "Jan", "02" = "Feb","03"="Mar","04"="Apr","05"="May","06"="Jun","07"="Jul","08"="Aug","09"="Sep","10"="Oct","11"="Nov","12"="Dec")) %>% 
+  select(-day) %>% 
+
+pols
+```
+
+
+```{r}
+snp <- snp %>% 
+  separate(date,into=c("month","day","year")) %>% 
+  mutate(month = recode(month, "1" = "Jan", "2" = "Feb","3"="Mar","4"="Apr","5"="May","6"="Jun","7"="Jul","8"="Aug","9"="Sep","10"="Oct","11"="Nov","12"="Dec")) %>% 
+  select(-day) %>% 
+  arrange(year,month) %>% 
+  select(year,month,everything())
+  
+  
+  
+snp
+```
+
+
+```{r}
+unemploy <- unemploy %>% 
+  pivot_wider(
+    names_from = "Year",
+    
+  )
+unemploy
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
 
 
 
