@@ -7,23 +7,25 @@ output: github_document
 
 ```{r,warning=FALSE,message=FALSE}
 library(tidyverse)
+library(readxl)
 ```
 
 
-## Problem 1
+## Problem 1 
 
-### 1. import csv data
+
+### 1. Import csv data
 ```{r, warning=TRUE,message=FALSE}
-transit <- read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
+data_1 <- read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",col_types = cols(Route8 = "c", Route9 = "c", Route10 = "c", Route11 = "c")) %>% 
   janitor::clean_names() 
 
-transit
 
 ```
 
-### 2. clean data
+
+### 2. Clean data
 ```{r}
-transit <- transit %>%  
+transit <- data_1 %>%  
   select(line, station_name, station_latitude,station_longitude, route1:route11, entry, vending, entrance_type, ada) %>% 
   mutate(entry=recode(entry,"YES"= TRUE,"NO"= FALSE))
 
@@ -38,45 +40,140 @@ transit
 
 
 *  data cleaning steps:
+  * read in csv and then change the data type from route8 to route11 into character
   * unify variable name format using `janitor::clean_names`
   * select the required columns using `select()` in `dplyr`
   * convert the character values in `entry` column into logical values (TRUE or FALSE) using `mutate()` and `recode()`
   
+
+### 3. How many distinct station?
+```{r}
+# method 1
+tibble(transit$line,transit$station_name) %>% 
+  distinct()
+
+# method 2
+data_1$station_location %>% 
+  unique() %>% 
+  length()
+
+```
+
+
+### 4. ADA compliant
+```{r}
+transit %>% 
+  filter(ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct()
+
+```
+
+
+### 5. Proportion of entrance without vending
+```{r}
+proportion <- transit %>% 
+  filter(vending == "NO") %>% 
+  pull(entry) %>% 
+  mean()
+
+proportion
+
+```
+
+### 6. Reform route number and route name
+```{r}
+transit %>% 
+  pivot_longer(
+    route1:route11,
+    names_to = "route_num",
+    values_to = "route") %>% 
+  filter(route == "A", ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct()
+
+```
+
+
+
+## Problem 2
+
+### 1. Read in Mr. Trash Wheel
+```{r}
+data_2 <- read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",range = "A2:N535")
+
+data_2
+
+```
+
+
+### 2. Clean Mr. Trash Wheel
+```{r}
+mr <- data_2 %>% 
+  janitor::clean_names() %>% 
+  drop_na(dumpster) %>% 
+  mutate(sports_balls = replace(sports_balls,1:length(sports_balls),round(as.integer(sports_balls))))
   
+is.integer(mr$sports_balls)
 
 
-```{r}
-
-```
-
-```{r}
+mr
 
 ```
 
+
+### 3. read in Professor Trash Wheel
 ```{r}
+data_3 <- read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",range = "A2:N117",sheet="Professor Trash Wheel")
+
+data_3
+```
+
+
+### 4. Clean Professor Trash Wheel
+```{r}
+pro <- data_3 %>% 
+  janitor::clean_names() %>% 
+  drop_na(dumpster) %>% 
+  mutate(sports_balls = replace(sports_balls,1:length(sports_balls),round(as.integer(sports_balls))))
+  
+is.integer(pro$sports_balls)
+
+pro
 
 ```
 
+
+### 5. combine the 2 datasets
 ```{r}
+full_join(mr,pro,by="dumpster")  # problem with the data type of dumpster
 
 ```
 
+
+*  description of the data
+  * the dimension of Mr. Trash Wheel is `r dim(mr)`, containing `r nrow(mr)` rows and `r ncol(mr)` columns
+  * key variables in Mr. Trash Wheel are `r names(mr)`
+  * the dimension of Professor Trash Wheel is `r dim(pro)`, containing `r nrow(pro)` rows and `r ncol(pro)` columns
+  * key variables in Mr. Trash Wheel are `r names(pro)`
+
+
+### 6. total trash weight collected by Professor Trash Wheel
 ```{r}
+sum(pro$weight_tons)
+
+```
+### 7. total sports balls collected by Mr.Trash Wheel in 2020
+```{r}
+mr %>% 
+  filter(mr$year== 2020) %>% 
+  sum(mr$sports_balls)
 
 ```
 
-```{r}
 
-```
 
-```{r}
 
-```
 
-```{r}
 
-```
 
-```{r}
-
-```
