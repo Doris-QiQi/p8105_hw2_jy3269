@@ -244,6 +244,28 @@ pols_snp_unemploy
 ```
 
 
+### 6. Description:
+
+*  the pols data set :
+  * it has `r nrow(pols)` rows and `r ncol(pols)` columns(variables)
+  * the year range in pols is `r range(pull(pols,year))`
+  * the key variable is `president`,showing which party the president is from
+  
+  
+* the SNP data set:
+  * it has `r nrow(SNP)` rows and `r ncol(SNP)` columns(variables)
+  * the year range in pols is `r range(pull(SNP,year))`
+  * the key variable is `close`, which means the closing values of the S&P stock index on the associated date
+  
+* the unemploy data set:
+  * it has `r nrow(unemploy)` rows and `r ncol(unemploy)` columns(variables)
+  * the year range in pols is `r range(pull(unemploy,year))`
+  * the key variable is `unemployment_percentage`
+  
+  
+  
+
+
 
 
 
