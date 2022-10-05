@@ -101,9 +101,10 @@ transit %>%
 
 ### 1. Read in Mr. Trash Wheel
 ```{r}
-data_2 <- read_excel("./data/Trash Wheel Collection Data.xlsx",range = "A2:N550")
+data_2 <- read_excel("./data/Trash Wheel Collection Data.xlsx",range = "A2:N550") 
+# select the range that contains data
 
-data_2
+head(data_2)
 
 ```
 
@@ -111,69 +112,69 @@ data_2
 ### 2. Clean Mr. Trash Wheel
 ```{r}
 mr <- data_2 %>% 
-  janitor::clean_names() %>% 
-  drop_na(dumpster) %>% 
-  mutate(sports_balls = as.integer(round(sports_balls,digits = 0))) %>% 
-  mutate(year = as.integer(year)) %>% 
-  mutate(mr,origin = "A",.before = "dumpster") %>% 
-  unite("ID",origin : dumpster,sep = "")
+  janitor::clean_names() %>%              # tidy up variable names
+  drop_na(dumpster) %>%                   # drop the rows without specific dumpster information
+  mutate(sports_balls = as.integer(round(sports_balls,digits = 0))) %>%  
+  mutate(origin = "Mr. Trash Wheel ",.before = "dumpster") %>% 
+  unite("ID",origin : dumpster,sep = "")  # a new column named ID to mark the dumpster from Mr.
   
-  
-mr
+head(mr)
 
 ```
 
 
 ### 3. read in Professor Trash Wheel
 ```{r}
-data_3 <- read_excel("./data/Trash Wheel Collection Data.xlsx",range = "A2:N97",sheet="Professor Trash Wheel")
+data_3 <- read_excel("./data/Trash Wheel Collection Data.xlsx",range = "A2:M97",sheet="Professor Trash Wheel")
+# select the range that contains data
 
-data_3
+head(data_3)
 ```
 
 
 ### 4. Clean Professor Trash Wheel
 ```{r}
 pro <- data_3 %>% 
-  janitor::clean_names() %>% 
-  drop_na(dumpster)
-  
+  janitor::clean_names() %>%             # tidy up variable names
+  drop_na(dumpster) %>%                  # drop rows without specific dumpster information
+  mutate(year=as.character(year)) %>%    # change into character to unify the format with mr.
+  mutate(origin = "Professor Trash Wheel ",.before = "dumpster") %>% 
+  unite("ID",origin : dumpster,sep = "") # a new column to mark the dumpster from professor
+
+head(pro)
 
 ```
 
 
 ### 5. combine the 2 datasets
 ```{r}
-full_join(mr,pro,by="dumpster")  # problem with the data type of dumpster
+combined_trash <- bind_rows(mr,pro) # use bind_rows() to combine the 2 datasets
+head(combined_trash)
+tail(combined_trash)
 
 ```
 
 
 *  description of the data
   * the dimension of Mr. Trash Wheel is `r dim(mr)`, containing `r nrow(mr)` rows and `r ncol(mr)` columns
-  * key variables in Mr. Trash Wheel are `r names(mr)`
+  * variables in Mr. Trash Wheel are `r names(mr)`
+  * the key variables in Mr. Trash Wheel are `r pull(mr, 5:13)`
   * the dimension of Professor Trash Wheel is `r dim(pro)`, containing `r nrow(pro)` rows and `r ncol(pro)` columns
-  * key variables in Mr. Trash Wheel are `r names(pro)`
+  * variables in Professor Trash Wheel are `r names(pro)`
+  * key variables in Professor Trash Wheel are `r pull(pro,5:12)`
+  
+*  Answer to the questions
+  * 1. What was the total weight of trash collected by Professor Trash Wheel? 
+  * the total weight of trash collected by Professor Trash Wheel is `r sum(pull(pro,weight_tons))`
+  * 2. What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
+  * the total number of sports balls collected by Mr. Trash Wheel in 2020 is `r sum(pull(filter(mrtrash,year==2020),sports_balls))`
 
-
-### 6. total trash weight collected by Professor Trash Wheel
-```{r}
-sum(pro$weight_tons)
-
-```
-### 7. total sports balls collected by Mr.Trash Wheel in 2020
-```{r}
-mr %>% 
-  filter(mr$year== 2020) %>% 
-  sum(mr$sports_balls)
-
-```
 
 
 
 ## Problem 3
 
-1. read in 3 csv datasets
+### 1. read in the 3 csv files
 ```{r}
 pols <- read.csv("./data/pols-month.csv")
 pols
