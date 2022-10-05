@@ -19,6 +19,8 @@ library(readxl)
 data_1 <- read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",col_types = cols(Route8 = "c", Route9 = "c", Route10 = "c", Route11 = "c")) %>% 
   janitor::clean_names() 
 
+head(data_1)
+
 
 ```
 
@@ -51,11 +53,6 @@ transit
 # method 1
 tibble(transit$line,transit$station_name) %>% 
   distinct()
-
-# method 2
-data_1$station_location %>% 
-  unique() %>% 
-  length()
 
 ```
 
@@ -114,8 +111,8 @@ head(data_2)
 mr <- data_2 %>% 
   janitor::clean_names() %>%              # tidy up variable names
   drop_na(dumpster) %>%                   # drop the rows without specific dumpster information
-  mutate(sports_balls = as.integer(round(sports_balls,digits = 0))) %>%  
-  mutate(origin = "Mr. Trash Wheel ",.before = "dumpster") %>% 
+  mutate(sports_balls = as.integer(round(sports_balls,digits = 0)),
+         origin = "Mr. Trash Wheel ",.before = "dumpster") %>% 
   unite("ID",origin : dumpster,sep = "")  # a new column named ID to mark the dumpster from Mr.
   
 head(mr)
@@ -137,8 +134,8 @@ head(data_3)
 pro <- data_3 %>% 
   janitor::clean_names() %>%             # tidy up variable names
   drop_na(dumpster) %>%                  # drop rows without specific dumpster information
-  mutate(year=as.character(year)) %>%    # change into character to unify the format with mr.
-  mutate(origin = "Professor Trash Wheel ",.before = "dumpster") %>% 
+  mutate(year=as.character(year) ,
+         origin = "Professor Trash Wheel ",.before = "dumpster") %>% 
   unite("ID",origin : dumpster,sep = "") # a new column to mark the dumpster from professor
 
 head(pro)
@@ -176,49 +173,58 @@ tail(combined_trash)
 
 ### 1. read in the 3 csv files
 ```{r}
-pols <- read.csv("./data/pols-month.csv")
-pols
+pols_month <- read.csv("./data/pols-month.csv")
+head(pols_month)
 
-unemploy <- read.csv("./data/unemployment.csv")
-unemploy
+unemployment <- read.csv("./data/unemployment.csv")
+head(unemployment)
 
 snp <- read.csv("./data/snp.csv")
-snp
+head(snp)
 
 
 ```
 
-2. clean the pol-month dataset
+### 2. clean the pol-month dataset
 ```{r}
-pols <- pols %>% 
-  separate(mon,into=c("year","month","day")) %>% 
-  mutate(month = recode(month, "01" = "Jan", "02" = "Feb","03"="Mar","04"="Apr","05"="May","06"="Jun","07"="Jul","08"="Aug","09"="Sep","10"="Oct","11"="Nov","12"="Dec")) %>% 
-  select(-day) %>% 
+pols <- pols_month %>% 
+  janitor::clean_names() %>% 
+  separate(mon,into=c("year","month","day")) %>%      # separate the date
+  mutate(month = month.abb[as.numeric(month)],        # change name of month into character
+         president=ifelse(prez_gop==0,'dem','gop'),   # president takes dem when prez_gop = 0  
+         year=as.numeric(year)) %>%                   # change the format of year into dbl
+  select(year,month,president,everything(),-prez_gop,-prez_dem,-day) 
+  # put year month and president at the front and delete 3 columns specified in the requirement
 
-pols
+head(pols)
+
 ```
 
-
+### 3. clean the snp dataset
 ```{r}
-snp <- snp %>% 
-  separate(date,into=c("month","day","year")) %>% 
-  mutate(month = recode(month, "1" = "Jan", "2" = "Feb","3"="Mar","4"="Apr","5"="May","6"="Jun","7"="Jul","8"="Aug","9"="Sep","10"="Oct","11"="Nov","12"="Dec")) %>% 
-  select(-day) %>% 
-  arrange(year,month) %>% 
-  select(year,month,everything())
-  
-  
-  
-snp
+SNP <- snp %>% 
+  janitor::clean_names() %>% 
+  separate(date,into = c("month","day","year"),sep="/") %>% # separate the date
+  mutate(year = as.numeric(year),                           # change year into dbl
+         year=ifelse(year<=20,year+2000,year+1900),         # change year into 4 digits
+         month = month.abb[as.numeric(month)]) %>%          # change month into character
+  select(year,month,close)                                  # set year and month as leading columns
+
+
+head(SNP)
+tail(SNP)
+
 ```
 
-
+### 4. clean the unemployment datset
 ```{r}
-unemploy <- unemploy %>% 
-  pivot_wider(
-    names_from = "Year",
-    
-  )
+unemploy <- unemployment %>% 
+  pivot_longer(                 # change from wide to longer
+    Jan:Dec,
+    names_to="month",
+    values_to = "close") %>% 
+  rename(year=Year)             # change the name of Year into year to unify with other datasets
+
 unemploy
 
 ```
