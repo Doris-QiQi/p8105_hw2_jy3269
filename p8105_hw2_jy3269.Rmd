@@ -96,11 +96,12 @@ transit %>%
 
 
 
+
 ## Problem 2
 
 ### 1. Read in Mr. Trash Wheel
 ```{r}
-data_2 <- read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",range = "A2:N535")
+data_2 <- read_excel("./data/Trash Wheel Collection Data.xlsx",range = "A2:N550")
 
 data_2
 
@@ -112,11 +113,12 @@ data_2
 mr <- data_2 %>% 
   janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
-  mutate(sports_balls = replace(sports_balls,1:length(sports_balls),round(as.integer(sports_balls))))
+  mutate(sports_balls = as.integer(round(sports_balls,digits = 0))) %>% 
+  mutate(year = as.integer(year)) %>% 
+  mutate(mr,origin = "A",.before = "dumpster") %>% 
+  unite("ID",origin : dumpster,sep = "")
   
-is.integer(mr$sports_balls)
-
-
+  
 mr
 
 ```
@@ -124,7 +126,7 @@ mr
 
 ### 3. read in Professor Trash Wheel
 ```{r}
-data_3 <- read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",range = "A2:N117",sheet="Professor Trash Wheel")
+data_3 <- read_excel("./data/Trash Wheel Collection Data.xlsx",range = "A2:N97",sheet="Professor Trash Wheel")
 
 data_3
 ```
@@ -134,12 +136,8 @@ data_3
 ```{r}
 pro <- data_3 %>% 
   janitor::clean_names() %>% 
-  drop_na(dumpster) %>% 
-  mutate(sports_balls = replace(sports_balls,1:length(sports_balls),round(as.integer(sports_balls))))
+  drop_na(dumpster)
   
-is.integer(pro$sports_balls)
-
-pro
 
 ```
 
