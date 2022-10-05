@@ -120,7 +120,7 @@ head(mr)
 ```
 
 
-### 3. read in Professor Trash Wheel
+### 3. Read in Professor Trash Wheel
 ```{r}
 data_3 <- read_excel("./data/Trash Wheel Collection Data.xlsx",range = "A2:M97",sheet="Professor Trash Wheel")
 # select the range that contains data
@@ -143,7 +143,7 @@ head(pro)
 ```
 
 
-### 5. combine the 2 datasets
+### 5. Combine the 2 datasets
 ```{r}
 combined_trash <- bind_rows(mr,pro) # use bind_rows() to combine the 2 datasets
 head(combined_trash)
@@ -151,6 +151,8 @@ tail(combined_trash)
 
 ```
 
+
+### 6. Description:
 
 *  description of the data
   * the dimension of Mr. Trash Wheel is `r dim(mr)`, containing `r nrow(mr)` rows and `r ncol(mr)` columns
@@ -171,7 +173,7 @@ tail(combined_trash)
 
 ## Problem 3
 
-### 1. read in the 3 csv files
+### 1. Read in the 3 csv files
 ```{r}
 pols_month <- read.csv("./data/pols-month.csv")
 head(pols_month)
@@ -185,7 +187,7 @@ head(snp)
 
 ```
 
-### 2. clean the pol-month dataset
+### 2. Clean the pol-month dataset
 ```{r}
 pols <- pols_month %>% 
   janitor::clean_names() %>% 
@@ -200,7 +202,7 @@ head(pols)
 
 ```
 
-### 3. clean the snp dataset
+### 3. Clean the snp dataset
 ```{r}
 SNP <- snp %>% 
   janitor::clean_names() %>% 
@@ -216,42 +218,31 @@ tail(SNP)
 
 ```
 
-### 4. clean the unemployment datset
+### 4. Clean the unemployment datset
 ```{r}
 unemploy <- unemployment %>% 
   pivot_longer(                 # change from wide to longer
     Jan:Dec,
     names_to="month",
-    values_to = "close") %>% 
-  rename(year=Year)             # change the name of Year into year to unify with other datasets
+    values_to = "unemployment_percentage") %>% 
+  rename(year=Year) %>%         # change the name of Year into year to unify with other datasets
+  mutate(year= as.numeric(year)) %>% 
+  janitor::clean_names()
 
 unemploy
 
 ```
 
-
+### 5. Join the datasets
 ```{r}
+pols_snp <- full_join(pols,SNP)
+pols_snp
 
+pols_snp_unemploy <- full_join(pols_snp,unemploy)
+pols_snp_unemploy
 
 ```
 
-
-```{r}
-
-
-```
-
-
-```{r}
-
-
-```
-
-
-```{r}
-
-
-```
 
 
 
