@@ -31,17 +31,17 @@ transit <- data_1 %>%
   select(line, station_name, station_latitude,station_longitude, route1:route11, entry, vending, entrance_type, ada) %>% 
   mutate(entry=recode(entry,"YES"= TRUE,"NO"= FALSE))
 
-transit
+head(transit)
 
 ```
 
-*  Description of the data:
+* Description of the data:
   * the transit data set has : `r ncol(transit)` columns(variables) and `r nrow(transit)` rows
   * the dimenison is : `r dim(transit)`
   * the variables are : `r names(transit)`
 
 
-*  data cleaning steps:
+* data cleaning steps:
   * read in csv and then change the data type from route8 to route11 into character
   * unify variable name format using `janitor::clean_names`
   * select the required columns using `select()` in `dplyr`
@@ -52,7 +52,8 @@ transit
 ```{r}
 # method 1
 tibble(transit$line,transit$station_name) %>% 
-  distinct()
+  distinct() %>% 
+  nrow()
 
 ```
 
@@ -62,7 +63,8 @@ tibble(transit$line,transit$station_name) %>%
 transit %>% 
   filter(ada == TRUE) %>% 
   select(station_name, line) %>% 
-  distinct()
+  distinct() %>% 
+  nrow()
 
 ```
 
@@ -87,7 +89,8 @@ transit %>%
     values_to = "route") %>% 
   filter(route == "A", ada == TRUE) %>% 
   select(station_name, line) %>% 
-  distinct()
+  distinct() %>% 
+  nrow()
 
 ```
 
@@ -114,7 +117,7 @@ mr <- data_2 %>%
          origin = "Mr. Trash Wheel ",.before = "dumpster") %>% 
   unite("ID",origin : dumpster,sep = "")    # a new column named ID to mark the dumpster from Mr.
   
-head(mr)
+mr
 
 ```
 
@@ -135,15 +138,14 @@ pro <- data_3 %>%
          origin = "Professor Trash Wheel ",.before = "dumpster") %>% 
   unite("ID",origin : dumpster,sep = "")     # a new column to mark the dumpster from professor
 
-head(pro)
+pro
 
 ```
 
 ### 5. Combine the 2 data sets in 2 ways
 ```{r}
 combined_1<- bind_rows(mr,pro)    # use bind_rows() to combine the 2 data sets
-head(combined_1)
-tail(combined_1)
+combined_1
 
 combined_2 <- full_join(mr,pro)   # use full_join() to combine the 2 data sets
 combined_2
@@ -223,7 +225,6 @@ SNP <- snp %>%
          month = month.abb[as.numeric(month)]) %>%          # change month into character
   select(year,month,close)                                  # set year and month as leading columns
 
-
 head(SNP)
 tail(SNP)
 
@@ -282,13 +283,14 @@ tail(pols_snp_unemploy)
   * we obtain `pols_snp` by full join `pols` and `snp`. 
   * The key variables for joining them are `r names(pols_snp)[1:2]`
   * it has `r nrow(pols_snp)` rows and `r ncol(pols_snp)` columns(variables)
+  * the year range in pols_snp is (`r range(pull(pols_snp,year))`), 68 years
   
   
 * the `pols_snp_unemploy` data set : 
   * we obtain `pols_snp_unemploy` by full join `pols_snp` and `unemploy`. 
   * The key variables for joining them are `r names(pols_snp_unemploy)[1:2]`
   * it has `r nrow(pols_snp_unemploy)` rows and `r ncol(pols_snp_unemploy)` columns(variables)
-  * the year range in unemploy is (`r range(pull(pols_snp_unemploy,year))`), 68 years
+  * the year range in pols_snp_unemploy is (`r range(pull(pols_snp_unemploy,year))`), 68 years
   
 
   
