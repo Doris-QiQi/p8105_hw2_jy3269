@@ -37,7 +37,7 @@ transit
 
 *  Description of the data:
   * the transit data set has : `r ncol(transit)` columns(variables) and `r nrow(transit)` rows
-  * the dimenison is : `r dimension(transit)`
+  * the dimenison is : `r dim(transit)`
   * the variables are : `r names(transit)`
 
 
@@ -96,7 +96,7 @@ transit %>%
 
 ## Problem 2
 
-### 1. Read in Mr. Trash Wheel
+### 1. Import Mr. Trash Wheel
 ```{r}
 data_2 <- read_excel("./data/Trash Wheel Collection Data.xlsx",range = "A2:N550") 
 # select the range that contains data
@@ -104,7 +104,6 @@ data_2 <- read_excel("./data/Trash Wheel Collection Data.xlsx",range = "A2:N550"
 head(data_2)
 
 ```
-
 
 ### 2. Clean Mr. Trash Wheel
 ```{r}
@@ -119,15 +118,13 @@ head(mr)
 
 ```
 
-
-### 3. Read in Professor Trash Wheel
+### 3. Import Professor Trash Wheel
 ```{r}
 data_3 <- read_excel("./data/Trash Wheel Collection Data.xlsx",range = "A2:M97",sheet="Professor Trash Wheel")
 # select the range that contains data
 
 head(data_3)
 ```
-
 
 ### 4. Clean Professor Trash Wheel
 ```{r}
@@ -142,7 +139,6 @@ head(pro)
 
 ```
 
-
 ### 5. Combine the 2 datasets
 ```{r}
 combined_trash <- bind_rows(mr,pro) # use bind_rows() to combine the 2 datasets
@@ -151,29 +147,28 @@ tail(combined_trash)
 
 ```
 
-
-### 6. Description:
-
-*  description of the data
-  * the dimension of Mr. Trash Wheel is `r dim(mr)`, containing `r nrow(mr)` rows and `r ncol(mr)` columns
+## 6. Description of the data
+  * the dimension of **Mr. Trash Wheel** is (`r dim(mr)`), containing `r nrow(mr)` rows and `r ncol(mr)` columns(variables)
   * variables in Mr. Trash Wheel are `r names(mr)`
-  * the key variables in Mr. Trash Wheel are `r pull(mr, 5:13)`
-  * the dimension of Professor Trash Wheel is `r dim(pro)`, containing `r nrow(pro)` rows and `r ncol(pro)` columns
-  * variables in Professor Trash Wheel are `r names(pro)`
-  * key variables in Professor Trash Wheel are `r pull(pro,5:12)`
+  * I think the key variables in Mr. Trash Wheel are  `r names(mr)[5:6]` because they are the indicators of total weight and volume. And sports_ball may also be a variable that is  of our interest.
   
-*  Answer to the questions
-  * 1. What was the total weight of trash collected by Professor Trash Wheel? 
+  * the dimension of **Professor Trash Wheel** is (`r dim(pro)`), containing `r nrow(pro)` rows and `r ncol(pro)` columns(variables)
+  * variables in Professor Trash Wheel are `r names(pro)`
+  * I think the key variables in Professor Trash Wheel are  `r names(pro)[5:6]` because they are the indicators of total weight and volume. And the professor dataset does not have the sports_ball column.
+
+  
+## 7. Answer to the questions
+  1. What was the total weight of trash collected by Professor Trash Wheel? 
   * the total weight of trash collected by Professor Trash Wheel is `r sum(pull(pro,weight_tons))`
-  * 2. What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
-  * the total number of sports balls collected by Mr. Trash Wheel in 2020 is `r sum(pull(filter(mrtrash,year==2020),sports_balls))`
+  2. What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
+  * the total number of sports balls collected by Mr. Trash Wheel in 2020 is `r sum(pull(filter(mr,year==2020),sports_balls))`
 
 
 
 
 ## Problem 3
 
-### 1. Read in the 3 csv files
+### 1. Import the 3 csv files
 ```{r}
 pols_month <- read.csv("./data/pols-month.csv")
 head(pols_month)
@@ -229,17 +224,19 @@ unemploy <- unemployment %>%
   mutate(year= as.numeric(year)) %>% 
   janitor::clean_names()
 
-unemploy
+head(unemploy)
 
 ```
 
 ### 5. Join the datasets
 ```{r}
 pols_snp <- full_join(pols,SNP)
-pols_snp
+head(pols_snp)
+tail(pols_snp)
 
 pols_snp_unemploy <- full_join(pols_snp,unemploy)
-pols_snp_unemploy
+head(pols_snp_unemploy)
+tail(pols_snp_unemploy)
 
 ```
 
