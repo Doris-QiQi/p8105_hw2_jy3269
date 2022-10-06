@@ -108,11 +108,11 @@ head(data_2)
 ### 2. Clean Mr. Trash Wheel
 ```{r}
 mr <- data_2 %>% 
-  janitor::clean_names() %>%              # tidy up variable names
-  drop_na(dumpster) %>%                   # drop the rows without specific dumpster information
+  janitor::clean_names() %>%                # tidy up variable names
+  drop_na(dumpster) %>%                     # drop the rows without specific dumpster information
   mutate(sports_balls = as.integer(round(sports_balls,digits = 0)),
          origin = "Mr. Trash Wheel ",.before = "dumpster") %>% 
-  unite("ID",origin : dumpster,sep = "")  # a new column named ID to mark the dumpster from Mr.
+  unite("ID",origin : dumpster,sep = "")    # a new column named ID to mark the dumpster from Mr.
   
 head(mr)
 
@@ -121,7 +121,7 @@ head(mr)
 ### 3. Import Professor Trash Wheel
 ```{r}
 data_3 <- read_excel("./data/Trash Wheel Collection Data.xlsx",range = "A2:M97",sheet="Professor Trash Wheel")
-# select the range that contains data
+                  # select the range that contains data
 
 head(data_3)
 ```
@@ -129,32 +129,48 @@ head(data_3)
 ### 4. Clean Professor Trash Wheel
 ```{r}
 pro <- data_3 %>% 
-  janitor::clean_names() %>%             # tidy up variable names
-  drop_na(dumpster) %>%                  # drop rows without specific dumpster information
+  janitor::clean_names() %>%                 # tidy up variable names
+  drop_na(dumpster) %>%                      # drop rows without specific dumpster information
   mutate(year=as.character(year) ,
          origin = "Professor Trash Wheel ",.before = "dumpster") %>% 
-  unite("ID",origin : dumpster,sep = "") # a new column to mark the dumpster from professor
+  unite("ID",origin : dumpster,sep = "")     # a new column to mark the dumpster from professor
 
 head(pro)
 
 ```
 
-### 5. Combine the 2 datasets
+### 5. Combine the 2 data sets in 2 ways
 ```{r}
-combined_trash <- bind_rows(mr,pro) # use bind_rows() to combine the 2 datasets
-head(combined_trash)
-tail(combined_trash)
+combined_1<- bind_rows(mr,pro)    # use bind_rows() to combine the 2 data sets
+head(combined_1)
+tail(combined_1)
+
+combined_2 <- full_join(mr,pro)   # use full_join() to combine the 2 data sets
+combined_2
 
 ```
 
 ## 6. Description of the data
-  * the dimension of **Mr. Trash Wheel** is (`r dim(mr)`), containing `r nrow(mr)` rows and `r ncol(mr)` columns(variables)
-  * variables in Mr. Trash Wheel are `r names(mr)`
-  * I think the key variables in Mr. Trash Wheel are  `r names(mr)[5:6]` because they are the indicators of total weight and volume. And sports_ball may also be a variable that is  of our interest.
+#### I am not sure of the meaning of "key" in "key variable"
+#### Thus, I interpret it in 2 ways : 1) important variables 2) variables used for joining data sets
+
+**Mr. Trash Wheel**
+
+* the dimension of Mr. Trash Wheel is (`r dim(mr)`), containing `r nrow(mr)` rows(observations) and `r ncol(mr)` columns(variables)
+* variables in Mr. Trash Wheel are : `r names(mr)`
+* I think the important variables in Mr. Trash Wheel are:  `r names(mr)[5:6]` because they are the indicators of total weight and volume. And sports_ball may also be a variable that is  of our interest.
+
+**Professor Trash Wheel** 
+
+* the dimension of Professor Trash Wheel is (`r dim(pro)`), containing `r nrow(pro)` rows(observations) and `r ncol(pro)` columns(variables)
+* variables in Professor Trash Wheel are : `r names(pro)`
+* I think the important variables in Professor Trash Wheel are :  `r names(pro)[5:6]` because they are the indicators of total weight and volume. And the professor dataset does not have the sports_ball column.
   
-  * the dimension of **Professor Trash Wheel** is (`r dim(pro)`), containing `r nrow(pro)` rows and `r ncol(pro)` columns(variables)
-  * variables in Professor Trash Wheel are `r names(pro)`
-  * I think the key variables in Professor Trash Wheel are  `r names(pro)[5:6]` because they are the indicators of total weight and volume. And the professor dataset does not have the sports_ball column.
+**key variables**
+
+* the key variables for joining the 2 data sets are :  `r names(pro)[1:13]`
+  
+  
 
   
 ## 7. Answer to the questions
@@ -182,7 +198,7 @@ head(snp)
 
 ```
 
-### 2. Clean the pol-month dataset
+### 2. Clean the pol-month data set
 ```{r}
 pols <- pols_month %>% 
   janitor::clean_names() %>% 
@@ -197,7 +213,7 @@ head(pols)
 
 ```
 
-### 3. Clean the snp dataset
+### 3. Clean the snp data set
 ```{r}
 SNP <- snp %>% 
   janitor::clean_names() %>% 
@@ -213,7 +229,7 @@ tail(SNP)
 
 ```
 
-### 4. Clean the unemployment datset
+### 4. Clean the unemployment data set
 ```{r}
 unemploy <- unemployment %>% 
   pivot_longer(                 # change from wide to longer
@@ -228,7 +244,7 @@ head(unemploy)
 
 ```
 
-### 5. Join the datasets
+### 5. Join the data sets
 ```{r}
 pols_snp <- full_join(pols,SNP)
 head(pols_snp)
@@ -240,24 +256,41 @@ tail(pols_snp_unemploy)
 
 ```
 
-
 ### 6. Description:
 
-*  the pols data set :
+#### I am not sure of the meaning of "key" in "key variable"
+#### Thus, I interpret it in 2 ways : 1) important variables 2) variables used for joining data sets
+
+* the `pols` data set :
   * it has `r nrow(pols)` rows and `r ncol(pols)` columns(variables)
-  * the year range in pols is `r range(pull(pols,year))`
-  * the key variable is `president`,showing which party the president is from
+  * the year range in pols is (`r range(pull(pols,year))`), 68 years
+  * I think the important variable is `president`,showing which party the president is from
   
   
-* the SNP data set:
+* the `SNP` data set:
   * it has `r nrow(SNP)` rows and `r ncol(SNP)` columns(variables)
-  * the year range in pols is `r range(pull(SNP,year))`
-  * the key variable is `close`, which means the closing values of the S&P stock index on the associated date
+  * the year range in SNP is (`r range(pull(SNP,year))`) , 65 years
+  * I think the important variable is `close`, which means the closing values of the S&P stock index on the associated date
   
-* the unemploy data set:
+* the `unemploy` data set:
   * it has `r nrow(unemploy)` rows and `r ncol(unemploy)` columns(variables)
-  * the year range in pols is `r range(pull(unemploy,year))`
-  * the key variable is `unemployment_percentage`
+  * the year range in unemploy is (`r range(pull(unemploy,year))`), 67 years
+  * I think the important variable is `unemployment_percentage`,showing the unemployment percentage in each month.
+  
+  
+* the `pols_snp` data set :
+  * we obtain `pols_snp` by full join `pols` and `snp`. 
+  * The key variables for joining them are `r names(pols_snp)[1:2]`
+  * it has `r nrow(pols_snp)` rows and `r ncol(pols_snp)` columns(variables)
+  
+  
+* the `pols_snp_unemploy` data set : 
+  * we obtain `pols_snp_unemploy` by full join `pols_snp` and `unemploy`. 
+  * The key variables for joining them are `r names(pols_snp_unemploy)[1:2]`
+  * it has `r nrow(pols_snp_unemploy)` rows and `r ncol(pols_snp_unemploy)` columns(variables)
+  * the year range in unemploy is (`r range(pull(pols_snp_unemploy,year))`), 68 years
+  
+
   
   
   
